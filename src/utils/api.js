@@ -5,7 +5,7 @@ class Api {
     this._body = config.body;
   }
 
-  _getResponseData(res) {
+  _checkResponse(res) {
     if (!res.ok) {
       return Promise.reject(`Ошибка: ${res.status}`);
     }
@@ -15,13 +15,13 @@ class Api {
   getCardsInfo() {
     return fetch(`${this._url}cards`, {
       headers: this._headers,
-    }).then((res) => this._getResponseData(res));
+    }).then(this._checkResponse);
   }
 
   getUserInfo() {
     return fetch(`${this._url}users/me`, {
       headers: this._headers,
-    }).then((res) => this._getResponseData(res));
+    }).then(this._checkResponse);
   }
 
   updateUserInfo(user) {
@@ -32,7 +32,7 @@ class Api {
         name: user.name,
         about: user.about,
       }),
-    }).then((res) => this._getResponseData(res));
+    }).then(this._checkResponse);
   }
 
   updateAvatar(user) {
@@ -42,7 +42,7 @@ class Api {
       body: JSON.stringify({
         avatar: user.avatar,
       }),
-    }).then((res) => this._getResponseData(res));
+    }).then(this._checkResponse);
   }
 
   newCard(card) {
@@ -53,28 +53,28 @@ class Api {
         name: card.name,
         link: card.link,
       }),
-    }).then((res) => this._getResponseData(res));
+    }).then(this._checkResponse);
   }
 
   deleteCard(id) {
     return fetch(`${this._url}cards/${id}`, {
       method: "DELETE",
       headers: this._headers,
-    }).then((res) => this._getResponseData(res));
+    }).then(this._checkResponse);
   }
 
   likeCard(id) {
     return fetch(`${this._url}cards/likes/${id}`, {
       method: "PUT",
       headers: this._headers,
-    }).then((res) => this._getResponseData(res));
+    }).then(this._checkResponse);
   }
 
   deleteLikeCard(id) {
     return fetch(`${this._url}cards/likes/${id}`, {
       method: "DELETE",
       headers: this._headers,
-    }).then((res) => this._getResponseData(res));
+    }).then(this._checkResponse);
   }
 }
 

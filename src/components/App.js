@@ -4,17 +4,19 @@ import Main from "./Main";
 import Footer from "./Footer";
 import PopupWithForm from "./PopupWithForm";
 import ImagePopup from "./ImagePopup";
-import { useState } from "react";
 
 export default function App() {
-  const [isEditAvatarPopupOpen, setIsEditAvatarPopupOpen] = useState(false);
-  const [isEditProfilePopupOpen, setIsEditProfilePopupOpen] = useState(false);
-  const [isAddPlacePopupOpen, setIsAddPlacePopupOpen] = useState(false);
+  const [isEditAvatarPopupOpen, setIsEditAvatarPopupOpen] =
+    React.useState(false);
+  const [isEditProfilePopupOpen, setIsEditProfilePopupOpen] =
+    React.useState(false);
+  const [isAddPlacePopupOpen, setIsAddPlacePopupOpen] = React.useState(false);
 
-  const [card, setCard] = useState(null);
+  const [selectedCard, setSelectedCard] = React.useState(null);
 
-  const onCardClick = (card) => setCard(card);
-  const onCardClose = (card) => setCard(null);
+  function handleCardClick(card) {
+    setSelectedCard(card);
+  }
 
   function handleEditAvatarClick() {
     setIsEditAvatarPopupOpen(true);
@@ -32,6 +34,7 @@ export default function App() {
     setIsEditAvatarPopupOpen(false);
     setIsEditProfilePopupOpen(false);
     setIsAddPlacePopupOpen(false);
+    setSelectedCard(null);
   }
 
   return (
@@ -41,146 +44,161 @@ export default function App() {
         onEditAvatar={handleEditAvatarClick}
         onEditProfile={handleEditProfileClick}
         onAddPlace={handleAddPlaceClick}
-        onCardClick={onCardClick}
+        onCardClick={handleCardClick}
       />
       <Footer />
 
-      <ImagePopup card={card} onClose={onCardClose} />
+      <ImagePopup card={selectedCard} onClose={closeAllPopups} />
 
       <PopupWithForm
         name="edit-profile"
         title="Редактировать&nbsp;профиль"
         isOpen={isEditProfilePopupOpen}
         onClose={closeAllPopups}
-        children={
-          <form
-            noValidate
-            className="form form_type_profile"
-            id="form-profile"
-            name="form-profile"
-          >
-            <fieldset className="form__set">
-              <label className="form__field">
-                <input
-                  id="profile-name-input"
-                  type="text"
-                  className="form__input form__input_type_name"
-                  name="name"
-                  required
-                  minLength="2"
-                  maxLength="40"
-                  placeholder="Имя"
-                />
-                <span className="profile-name-input-error form__input-error"></span>
-              </label>
-              <label className="form__field">
-                <input
-                  id="profile-caption-input"
-                  type="text"
-                  className="form__input form__input_type_caption"
-                  name="caption"
-                  required
-                  minLength="2"
-                  maxLength="200"
-                  placeholder="О себе"
-                />
-                <span className="profile-caption-input-error form__input-error"></span>
-              </label>
-              <button
-                type="submit"
-                className="form__submit button popup__save-btn popup__save-btn_type_profile-save"
-              >
-                Сохранить
-              </button>
-            </fieldset>
-          </form>
-        }
-      />
+      >
+        <form
+          noValidate
+          className="form form_type_profile"
+          id="form-profile"
+          name="form-profile"
+        >
+          <fieldset className="form__set">
+            <label className="form__field">
+              <input
+                id="profile-name-input"
+                type="text"
+                className="form__input form__input_type_name"
+                name="name"
+                required
+                minLength="2"
+                maxLength="40"
+                placeholder="Имя"
+              />
+              <span className="profile-name-input-error form__input-error"></span>
+            </label>
+            <label className="form__field">
+              <input
+                id="profile-caption-input"
+                type="text"
+                className="form__input form__input_type_caption"
+                name="caption"
+                required
+                minLength="2"
+                maxLength="200"
+                placeholder="О себе"
+              />
+              <span className="profile-caption-input-error form__input-error"></span>
+            </label>
+            <button
+              type="submit"
+              className="form__submit button popup__save-btn popup__save-btn_type_profile-save"
+            >
+              Сохранить
+            </button>
+          </fieldset>
+        </form>
+      </PopupWithForm>
 
       <PopupWithForm
         name="new-post"
         title="Новое&nbsp;место"
         isOpen={isAddPlacePopupOpen}
         onClose={closeAllPopups}
-        children={
-          <form
-            noValidate
-            className="form form_type_new-post"
-            id="form-newpost"
-            name="form-newpost"
-          >
-            <fieldset className="form__set">
-              <label className="form__field">
-                <input
-                  id="card-name-input"
-                  type="text"
-                  className="form__input form__input_type_place-name"
-                  name="name"
-                  required
-                  minLength="2"
-                  maxLength="30"
-                  placeholder="Название"
-                />
-                <span className="card-name-input-error form__input-error"></span>
-              </label>
-              <label className="form__field">
-                <input
-                  id="url-input"
-                  type="url"
-                  className="form__input form__input_type_pic"
-                  name="link"
-                  required
-                  placeholder="Ссылка на картинку"
-                />
-                <span className="url-input-error form__input-error"></span>
-              </label>
-              <button
-                type="submit"
-                className="form__submit button popup__save-btn popup__save-btn_type_place-save"
-              >
-                Сохранить
-              </button>
-            </fieldset>
-          </form>
-        }
-      />
+      >
+        <form
+          noValidate
+          className="form form_type_new-post"
+          id="form-newpost"
+          name="form-newpost"
+        >
+          <fieldset className="form__set">
+            <label className="form__field">
+              <input
+                id="card-name-input"
+                type="text"
+                className="form__input form__input_type_place-name"
+                name="name"
+                required
+                minLength="2"
+                maxLength="30"
+                placeholder="Название"
+              />
+              <span className="card-name-input-error form__input-error"></span>
+            </label>
+            <label className="form__field">
+              <input
+                id="url-input"
+                type="url"
+                className="form__input form__input_type_pic"
+                name="link"
+                required
+                placeholder="Ссылка на картинку"
+              />
+              <span className="url-input-error form__input-error"></span>
+            </label>
+            <button
+              type="submit"
+              className="form__submit button popup__save-btn popup__save-btn_type_place-save"
+            >
+              Сохранить
+            </button>
+          </fieldset>
+        </form>
+      </PopupWithForm>
 
       <PopupWithForm
         name="edit-avatar"
         title="Обновить&nbsp;аватар"
         isOpen={isEditAvatarPopupOpen}
         onClose={closeAllPopups}
-        children={
-          <form
-            noValidate
-            className="form form_type_avatar"
-            id="form-avatar"
-            name="form-avatar"
+      >
+        <form
+          noValidate
+          className="form form_type_avatar"
+          id="form-avatar"
+          name="form-avatar"
+        >
+          <fieldset className="form__set">
+            <label className="form__field">
+              <input
+                id="avatar-input"
+                type="url"
+                className="form__input form__input_type_avatar"
+                name="link"
+                required
+                placeholder="Ссылка на аватар"
+              />
+              <span className="avatar-input-error form__input-error"></span>
+            </label>
+
+            <button
+              type="submit"
+              className="form__submit button popup__save-btn popup__save-btn_type_avatar-save"
+            >
+              Сохранить
+            </button>
+          </fieldset>
+        </form>
+      </PopupWithForm>
+
+      <PopupWithForm
+        name="confirm"
+        title="Вы&nbsp;уверены?"
+      >
+        <form
+          noValidate
+          className="form form_type_confirm"
+          id="form-confirm"
+          name="form-confirm"
+        >
+          <button
+            type="submit"
+            className="form__submit button popup__save-btn popup__save-btn_type_confirm"
           >
-            <fieldset className="form__set">
-              <label className="form__field">
-                <input
-                  id="avatar-input"
-                  type="url"
-                  className="form__input form__input_type_avatar"
-                  name="link"
-                  required
-                  placeholder="Ссылка на аватар"
-                />
-                <span className="avatar-input-error form__input-error"></span>
-              </label>
-
-              <button
-                type="submit"
-                className="form__submit button popup__save-btn popup__save-btn_type_avatar-save"
-              >
-                Сохранить
-              </button>
-            </fieldset>
-          </form>
-        }
-      />
-
+            Да
+          </button>
+        </form>
+      </PopupWithForm>
     </div>
   );
 }
