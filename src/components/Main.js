@@ -1,8 +1,8 @@
 import React from "react";
 import Card from "./Card";
+import CurrentUserContext from "../contexts/CurrentUserContext";
 
 export default function Main({
-  currentUser,
   onEditAvatar,
   onEditProfile,
   onAddPlace,
@@ -11,6 +11,9 @@ export default function Main({
   onCardDelete,
   cards,
 }) {
+
+  const currentUser = React.useContext(CurrentUserContext);
+
   return (
     <main className="content">
       <section className="profile">
@@ -41,7 +44,6 @@ export default function Main({
               key={card._id}
               card={card}
               onCardClick={onCardClick}
-              currentUser={currentUser}
               onCardLike={onCardLike}
               onCardDelete={onCardDelete}
             />

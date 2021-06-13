@@ -108,7 +108,6 @@ export default function App() {
       <div className="page">
         <Header />
         <Main
-          currentUser={currentUser}
           onEditAvatar={handleEditAvatarClick}
           onEditProfile={handleEditProfileClick}
           onAddPlace={handleAddPlaceClick}

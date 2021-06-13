@@ -1,7 +1,7 @@
 import React from "react";
+import CurrentUserContext from "../contexts/CurrentUserContext";
 
 export default function Card({
-  currentUser,
   card,
   onCardClick,
   onCardLike,
@@ -18,6 +18,8 @@ export default function Card({
   function handleDeleteClick() {
     onCardDelete(card);
   }
+
+  const currentUser = React.useContext(CurrentUserContext);
 
   const isLiked = card.likes.some((i) => i._id === currentUser._id);
   const cardLikeButtonClassName = `button card__like-btn ${
