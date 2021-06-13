@@ -4,6 +4,11 @@ import Main from "./Main";
 import Footer from "./Footer";
 import PopupWithForm from "./PopupWithForm";
 import ImagePopup from "./ImagePopup";
+import EditProfilePopup from "./EditProfilePopup";
+import EditAvatarPopup from "./EditAvatarPopup";
+import AddPlacePopup from "./AddPlacePopup";
+import api from "../utils/api";
+import CurrentUserContext from "../contexts/CurrentUserContext";
 
 export default function App() {
   const [isEditAvatarPopupOpen, setIsEditAvatarPopupOpen] =
@@ -13,6 +18,46 @@ export default function App() {
   const [isAddPlacePopupOpen, setIsAddPlacePopupOpen] = React.useState(false);
 
   const [selectedCard, setSelectedCard] = React.useState(null);
+
+  const [currentUser, setCurrentUser] = React.useState("");
+
+  React.useEffect(() => {
+    api
+      .getUserInfo()
+      .then((user) => {
+        setCurrentUser(user);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, []);
+
+  const [cards, setCards] = React.useState([]);
+
+  React.useEffect(() => {
+    api
+      .getCardsInfo()
+      .then((cards) => {
+        setCards(cards);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, []);
+
+  function handleCardLike(card) {
+    const isLiked = card.likes.some((i) => i._id === currentUser._id);
+
+    api.changeLikeCardStatus(card._id, isLiked).then((newCard) => {
+      setCards((state) => state.map((c) => (c._id === card._id ? newCard : c)));
+    });
+  }
+
+  function handleCardDelete(card) {
+    api
+      .deleteCard(card._id)
+      .then(setCards((state) => state.filter((newCard) => newCard !== card)));
+  }
 
   function handleCardClick(card) {
     setSelectedCard(card);
@@ -30,6 +75,27 @@ export default function App() {
     setIsAddPlacePopupOpen(true);
   }
 
+  function handleUpdateUser(user) {
+    api
+      .updateUserInfo(user)
+      .then((res) => setCurrentUser(res))
+      .then(closeAllPopups);
+  }
+
+  function handleUpdateAvatar(user) {
+    api
+      .updateAvatar(user)
+      .then((res) => setCurrentUser(res))
+      .then(closeAllPopups);
+  }
+
+  function handleAddPlaceSubmit(card) {
+    api
+      .newCard(card)
+      .then((newCard) => setCards([newCard, ...cards]))
+      .then(closeAllPopups);
+  }
+
   function closeAllPopups() {
     setIsEditAvatarPopupOpen(false);
     setIsEditProfilePopupOpen(false);
@@ -38,167 +104,57 @@ export default function App() {
   }
 
   return (
-    <div className="page">
-      <Header />
-      <Main
-        onEditAvatar={handleEditAvatarClick}
-        onEditProfile={handleEditProfileClick}
-        onAddPlace={handleAddPlaceClick}
-        onCardClick={handleCardClick}
-      />
-      <Footer />
+    <CurrentUserContext.Provider value={currentUser}>
+      <div className="page">
+        <Header />
+        <Main
+          currentUser={currentUser}
+          onEditAvatar={handleEditAvatarClick}
+          onEditProfile={handleEditProfileClick}
+          onAddPlace={handleAddPlaceClick}
+          onCardClick={handleCardClick}
+          onCardLike={handleCardLike}
+          onCardDelete={handleCardDelete}
+          cards={cards}
+        />
+        <Footer />
 
-      <ImagePopup card={selectedCard} onClose={closeAllPopups} />
+        <ImagePopup card={selectedCard} onClose={closeAllPopups} />
 
-      <PopupWithForm
-        name="edit-profile"
-        title="Редактировать&nbsp;профиль"
-        isOpen={isEditProfilePopupOpen}
-        onClose={closeAllPopups}
-      >
-        <form
-          noValidate
-          className="form form_type_profile"
-          id="form-profile"
-          name="form-profile"
-        >
-          <fieldset className="form__set">
-            <label className="form__field">
-              <input
-                id="profile-name-input"
-                type="text"
-                className="form__input form__input_type_name"
-                name="name"
-                required
-                minLength="2"
-                maxLength="40"
-                placeholder="Имя"
-              />
-              <span className="profile-name-input-error form__input-error"></span>
-            </label>
-            <label className="form__field">
-              <input
-                id="profile-caption-input"
-                type="text"
-                className="form__input form__input_type_caption"
-                name="caption"
-                required
-                minLength="2"
-                maxLength="200"
-                placeholder="О себе"
-              />
-              <span className="profile-caption-input-error form__input-error"></span>
-            </label>
-            <button
-              type="submit"
-              className="form__submit button popup__save-btn popup__save-btn_type_profile-save"
-            >
-              Сохранить
-            </button>
-          </fieldset>
-        </form>
-      </PopupWithForm>
+        <EditProfilePopup
+          isOpen={isEditProfilePopupOpen}
+          onClose={closeAllPopups}
+          onUpdateUser={handleUpdateUser}
+        />
 
-      <PopupWithForm
-        name="new-post"
-        title="Новое&nbsp;место"
-        isOpen={isAddPlacePopupOpen}
-        onClose={closeAllPopups}
-      >
-        <form
-          noValidate
-          className="form form_type_new-post"
-          id="form-newpost"
-          name="form-newpost"
-        >
-          <fieldset className="form__set">
-            <label className="form__field">
-              <input
-                id="card-name-input"
-                type="text"
-                className="form__input form__input_type_place-name"
-                name="name"
-                required
-                minLength="2"
-                maxLength="30"
-                placeholder="Название"
-              />
-              <span className="card-name-input-error form__input-error"></span>
-            </label>
-            <label className="form__field">
-              <input
-                id="url-input"
-                type="url"
-                className="form__input form__input_type_pic"
-                name="link"
-                required
-                placeholder="Ссылка на картинку"
-              />
-              <span className="url-input-error form__input-error"></span>
-            </label>
-            <button
-              type="submit"
-              className="form__submit button popup__save-btn popup__save-btn_type_place-save"
-            >
-              Сохранить
-            </button>
-          </fieldset>
-        </form>
-      </PopupWithForm>
+        <AddPlacePopup
+          isOpen={isAddPlacePopupOpen}
+          onClose={closeAllPopups}
+          onAddPlace={handleAddPlaceSubmit}
+        />
 
-      <PopupWithForm
-        name="edit-avatar"
-        title="Обновить&nbsp;аватар"
-        isOpen={isEditAvatarPopupOpen}
-        onClose={closeAllPopups}
-      >
-        <form
-          noValidate
-          className="form form_type_avatar"
-          id="form-avatar"
-          name="form-avatar"
-        >
-          <fieldset className="form__set">
-            <label className="form__field">
-              <input
-                id="avatar-input"
-                type="url"
-                className="form__input form__input_type_avatar"
-                name="link"
-                required
-                placeholder="Ссылка на аватар"
-              />
-              <span className="avatar-input-error form__input-error"></span>
-            </label>
+        <EditAvatarPopup
+          isOpen={isEditAvatarPopupOpen}
+          onClose={closeAllPopups}
+          onUpdateAvatar={handleUpdateAvatar}
+        />
 
-            <button
-              type="submit"
-              className="form__submit button popup__save-btn popup__save-btn_type_avatar-save"
-            >
-              Сохранить
-            </button>
-          </fieldset>
-        </form>
-      </PopupWithForm>
-
-      <PopupWithForm
-        name="confirm"
-        title="Вы&nbsp;уверены?"
-      >
-        <form
-          noValidate
-          className="form form_type_confirm"
-          id="form-confirm"
-          name="form-confirm"
-        >
-          <button
-            type="submit"
-            className="form__submit button popup__save-btn popup__save-btn_type_confirm"
+        <PopupWithForm name="confirm" title="Вы&nbsp;уверены?">
+          <form
+            noValidate
+            className="form form_type_confirm"
+            id="form-confirm"
+            name="form-confirm"
           >
-            Да
-          </button>
-        </form>
-      </PopupWithForm>
-    </div>
+            <button
+              type="submit"
+              className="form__submit button popup__save-btn popup__save-btn_type_confirm"
+            >
+              Да
+            </button>
+          </form>
+        </PopupWithForm>
+      </div>
+    </CurrentUserContext.Provider>
   );
 }

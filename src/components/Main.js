@@ -1,41 +1,28 @@
 import React from "react";
-import api from "../utils/api";
 import Card from "./Card";
 
 export default function Main({
+  currentUser,
   onEditAvatar,
   onEditProfile,
   onAddPlace,
   onCardClick,
+  onCardLike,
+  onCardDelete,
+  cards,
 }) {
-  const [userName, setUserName] = React.useState('');
-  const [userDescription, setUserDescription] = React.useState('');
-  const [userAvatar, setUserAvatar] = React.useState('');
-  const [cards, setCards] = React.useState([]);
-
-  React.useEffect(() => {
-    api.getCardsInfo()
-    .then((cards) => { setCards(cards) })
-    .catch((err) => { console.log(err) });
-
-    api.getUserInfo()
-    .then((user) => { 
-      setUserName(user.name);
-      setUserDescription(user.about);
-      setUserAvatar(user.avatar)
-     })
-    .catch((err) => { console.log(err) });
-  }, []);
-
-
   return (
     <main className="content">
       <section className="profile">
         <div className="profile__avatar" onClick={onEditAvatar}>
-          <img className="profile__pic" src={userAvatar} alt="фото профиля" />
+          <img
+            className="profile__pic"
+            src={currentUser.avatar}
+            alt="фото профиля"
+          />
         </div>
-        <h1 className="profile__title">{userName}</h1>
-        <p className="profile__subtitle">{userDescription}</p>
+        <h1 className="profile__title">{currentUser.name}</h1>
+        <p className="profile__subtitle">{currentUser.about}</p>
         <button
           type="button"
           onClick={onEditProfile}
@@ -50,7 +37,14 @@ export default function Main({
       <section className="cards">
         <ul className="cards__list">
           {cards.map((card) => (
-            <Card key={card._id} card={card} onCardClick={onCardClick} />
+            <Card
+              key={card._id}
+              card={card}
+              onCardClick={onCardClick}
+              currentUser={currentUser}
+              onCardLike={onCardLike}
+              onCardDelete={onCardDelete}
+            />
           ))}
         </ul>
       </section>
