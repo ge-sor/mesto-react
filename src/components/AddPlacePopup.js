@@ -22,6 +22,8 @@ export default function AddPlacePopup({ isOpen, onClose, onAddPlace }) {
       name: cardName,
       link: cardLink,
     });
+    setCardName("");
+    setCardLink("");
   }
 
   return (
@@ -31,51 +33,36 @@ export default function AddPlacePopup({ isOpen, onClose, onAddPlace }) {
       isOpen={isOpen}
       onClose={onClose}
       onSubmit={handleSubmit}
+      buttonText="Сохранить"
     >
-      <form
-        noValidate
-        className="form form_type_new-post"
-        id="form-newpost"
-        name="form-newpost"
-        onSubmit={handleSubmit}
-      >
-        <fieldset className="form__set">
-          <label className="form__field">
-            <input
-              id="card-name-input"
-              type="text"
-              className="form__input form__input_type_place-name"
-              name="name"
-              required
-              minLength="2"
-              maxLength="30"
-              placeholder="Название"
-              value={cardName || ""}
-              onChange={handleCardNameChange}
-            />
-            <span className="card-name-input-error form__input-error"></span>
-          </label>
-          <label className="form__field">
-            <input
-              id="url-input"
-              type="url"
-              className="form__input form__input_type_pic"
-              name="link"
-              required
-              placeholder="Ссылка на картинку"
-              value={cardLink || ""}
-              onChange={handleCardLinkChange}
-            />
-            <span className="url-input-error form__input-error"></span>
-          </label>
-          <button
-            type="submit"
-            className="form__submit button popup__save-btn popup__save-btn_type_place-save"
-          >
-            Сохранить
-          </button>
-        </fieldset>
-      </form>
+      <label className="form__field">
+        <input
+          id="card-name-input"
+          type="text"
+          className="form__input form__input_type_place-name"
+          name="name"
+          required
+          minLength="2"
+          maxLength="30"
+          placeholder="Название"
+          value={cardName || ""}
+          onChange={handleCardNameChange}
+        />
+        <span className="card-name-input-error form__input-error"></span>
+      </label>
+      <label className="form__field">
+        <input
+          id="url-input"
+          type="url"
+          className="form__input form__input_type_pic"
+          name="link"
+          required
+          placeholder="Ссылка на картинку"
+          value={cardLink || ""}
+          onChange={handleCardLinkChange}
+        />
+        <span className="url-input-error form__input-error"></span>
+      </label>
     </PopupWithForm>
   );
 }

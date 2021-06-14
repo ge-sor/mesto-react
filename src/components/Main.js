@@ -11,7 +11,6 @@ export default function Main({
   onCardDelete,
   cards,
 }) {
-
   const currentUser = React.useContext(CurrentUserContext);
 
   return (

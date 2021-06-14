@@ -14,8 +14,8 @@ export default function ImagePopup({ onClose, card }) {
         ></button>
         <img
           className="popup__image-fullscreen"
-          src={card ? card.link : ""}
-          alt={card ? card.name : ""}
+          src={card?.link}
+          alt={card?.name}
         />
         <h2 className="popup__text-fullscreen">{card ? card.name : ""}</h2>
       </div>

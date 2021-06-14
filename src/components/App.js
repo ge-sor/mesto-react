@@ -19,7 +19,7 @@ export default function App() {
 
   const [selectedCard, setSelectedCard] = React.useState(null);
 
-  const [currentUser, setCurrentUser] = React.useState("");
+  const [currentUser, setCurrentUser] = React.useState({});
 
   React.useEffect(() => {
     api
@@ -49,14 +49,23 @@ export default function App() {
     const isLiked = card.likes.some((i) => i._id === currentUser._id);
 
     api.changeLikeCardStatus(card._id, isLiked).then((newCard) => {
-      setCards((state) => state.map((c) => (c._id === card._id ? newCard : c)));
+      setCards((state) =>
+        state.map((c) => (c._id === card._id ? newCard : c))
+      ).catch((err) => {
+        console.log(err);
+      });
     });
   }
 
   function handleCardDelete(card) {
     api
       .deleteCard(card._id)
-      .then(setCards((state) => state.filter((newCard) => newCard !== card)));
+      .then(() =>
+        setCards((state) => state.filter((newCard) => newCard !== card))
+      )
+      .catch((err) => {
+        console.log(err);
+      });
   }
 
   function handleCardClick(card) {
@@ -79,21 +88,30 @@ export default function App() {
     api
       .updateUserInfo(user)
       .then((res) => setCurrentUser(res))
-      .then(closeAllPopups);
+      .then(closeAllPopups)
+      .catch((err) => {
+        console.log(err);
+      });
   }
 
   function handleUpdateAvatar(user) {
     api
       .updateAvatar(user)
       .then((res) => setCurrentUser(res))
-      .then(closeAllPopups);
+      .then(closeAllPopups)
+      .catch((err) => {
+        console.log(err);
+      });
   }
 
   function handleAddPlaceSubmit(card) {
     api
       .newCard(card)
       .then((newCard) => setCards([newCard, ...cards]))
-      .then(closeAllPopups);
+      .then(closeAllPopups)
+      .catch((err) => {
+        console.log(err);
+      });
   }
 
   function closeAllPopups() {
@@ -138,21 +156,11 @@ export default function App() {
           onUpdateAvatar={handleUpdateAvatar}
         />
 
-        <PopupWithForm name="confirm" title="Вы&nbsp;уверены?">
-          <form
-            noValidate
-            className="form form_type_confirm"
-            id="form-confirm"
-            name="form-confirm"
-          >
-            <button
-              type="submit"
-              className="form__submit button popup__save-btn popup__save-btn_type_confirm"
-            >
-              Да
-            </button>
-          </form>
-        </PopupWithForm>
+        <PopupWithForm
+          name="confirm"
+          title="Вы&nbsp;уверены?"
+          buttonText="Да"
+        ></PopupWithForm>
       </div>
     </CurrentUserContext.Provider>
   );
